@@ -58,7 +58,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--input_artifact", 
         type=str,
-        help='Uncleaned dataset name',
+        help='Uncleaned dataset name.',
         required=True
     )
 
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output_description", 
         type=str,
-        help='Description of output dataset',
+        help='Description of output dataset.',
         required=True
     )
 
