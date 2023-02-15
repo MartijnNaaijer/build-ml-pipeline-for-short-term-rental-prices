@@ -58,14 +58,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--input_artifact", 
         type=str,
-        help='Uncleaned dataset name.',
+        help='Name of uncleaned dataset.',
         required=True
     )
 
     parser.add_argument(
         "--output_artifact", 
         type=str,
-        help='Cleaned dataset name.',
+        help='Name of cleaned dataset.',
         required=True
     )
 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max_price", 
         type=float,
-        help='',
+        help='Maximum price. Higher values are outliers and will be removed.',
         required=True
     )
 
