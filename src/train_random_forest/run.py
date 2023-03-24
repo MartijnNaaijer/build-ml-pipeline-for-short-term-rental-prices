@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 This script trains a Random Forest
 """
@@ -52,8 +51,8 @@ def go(args):
     rf_config['random_state'] = args.random_seed
 
     ######################################
-    # Use run.use_artifact(...).file() to get the train and validation artifact (args.trainval_artifact)
-    # and save the returned path in train_local_pat
+    # Get the train and validation artifact (args.trainval_artifact)
+    # and save the returned path in train_local_path
     trainval_local_path = run.use_artifact(args.trainval_artifact).file()
     ######################################
 
@@ -102,8 +101,6 @@ def go(args):
         "random_forest_dir",
         serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE
     )
-    ######################################
-
     ######################################
     # Upload the model we just exported to W&B
     # HINT: use wandb.Artifact to create an artifact. Use args.output_artifact as artifact name, "model_export" as
@@ -171,7 +168,10 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     # Build a pipeline with two steps:
     # 1 - A SimpleImputer(strategy="most_frequent") to impute missing values
     # 2 - A OneHotEncoder() step to encode the variable
-    non_ordinal_categorical_preproc = # YOUR CODE HERE
+    non_ordinal_categorical_preproc = make_pipeline(
+        SimpleImputer(strategy="most_frequent"),
+        OneHotEncoder()
+    )
     ######################################
 
     # Let's impute the numerical columns to make sure we can handle missing values
