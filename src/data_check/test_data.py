@@ -4,7 +4,7 @@ import scipy.stats
 
 
 def test_column_names(data):
-
+    """Tests if all required columns are present in correct order."""
     expected_colums = [
         "id",
         "name",
@@ -23,17 +23,14 @@ def test_column_names(data):
         "calculated_host_listings_count",
         "availability_365",
     ]
-
     these_columns = data.columns.values
-
     # This also enforces the same order
     assert list(expected_colums) == list(these_columns)
 
 
 def test_neighborhood_names(data):
-
+    """Tests presence of areas in NYC in dataset."""
     known_names = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"]
-
     neigh = set(data['neighbourhood_group'].unique())
 
     # Unordered check
@@ -42,7 +39,7 @@ def test_neighborhood_names(data):
 
 def test_proper_boundaries(data: pd.DataFrame):
     """
-    Test proper longitude and latitude boundaries for properties in and around NYC
+    Test proper longitude and latitude boundaries for properties in and around NYC.
     """
     idx = data['longitude'].between(-74.25, -73.50) & data['latitude'].between(40.5, 41.2)
 
@@ -60,6 +57,11 @@ def test_similar_neigh_distrib(data: pd.DataFrame, ref_data: pd.DataFrame, kl_th
     assert scipy.stats.entropy(dist1, dist2, base=2) < kl_threshold
 
 
-########################################################
-# Implement here test_row_count and test_price_range   #
-########################################################
+def test_row_count(data):
+    """Tests whether number of rows in dataset has falls wthin range."""
+    assert 15000 < data.shape[0] < 1000000
+
+
+def test_price_range(data, min_price, max_price):
+    """Tests whether all prices are between upper and lower boundaries."""
+    assert all(data['price'].between(min_price, max_price))
