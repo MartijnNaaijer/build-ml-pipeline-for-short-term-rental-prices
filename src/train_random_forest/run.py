@@ -57,7 +57,7 @@ def go(args):
     ######################################
 
     X = pd.read_csv(trainval_local_path)
-    y = X.pop("price")  # this removes the column "price" from X and puts it into y
+    y = X.pop("price")
 
     logger.info(f"Minimum price: {y.min()}, Maximum price: {y.max()}")
 
@@ -84,21 +84,21 @@ def go(args):
     y_pred = sk_pipe.predict(X_val)
     mae = mean_absolute_error(y_val, y_pred)
 
-    logger.info(f"Score: {r_squared}")
-    logger.info(f"MAE: {mae}")
+    logger.info(f'{r_squared=}')
+    logger.info(f'{mae=}')
 
     logger.info("Exporting model")
 
     # Save model package in the MLFlow sklearn format
-    if os.path.exists("random_forest_dir"):
-        shutil.rmtree("random_forest_dir")
+    if os.path.exists('random_forest_dir'):
+        shutil.rmtree('random_forest_dir')
 
     ######################################
     # Save the sk_pipe pipeline as a mlflow.sklearn model in the directory "random_forest_dir"
     # HINT: use mlflow.sklearn.save_model
     mlflow.sklearn.save_model(
         sk_pipe,
-        "random_forest_dir",
+        'random_forest_dir',
         serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE
     )
     ######################################
@@ -108,13 +108,13 @@ def go(args):
     # you just created to add the "random_forest_dir" directory to the artifact, and finally use
     # run.log_artifact to log the artifact to the run
     artifact = wandb.Artifact(args.output_artifact, 
-                              type="model_export",
-                              description="RF model",
+                              type='model_export',
+                              description='RF model',
                               metadata=rf_config)
-    artifact.add_dir("random_forest_dir")
+    artifact.add_dir('random_forest_dir')
     run.log_artifact(artifact)
     artifact.wait()
-    logger.info("Artifact uploaded.")
+    logger.info('Artifact uploaded.')
     ######################################
 
     # Plot feature importance
@@ -142,11 +142,10 @@ def plot_feature_importance(pipe, feat_names):
     feat_imp = pipe["random_forest"].feature_importances_[: len(feat_names)-1]
     # For the NLP feature we sum across all the TF-IDF dimensions into a global
     # NLP importance
-    nlp_importance = sum(pipe["random_forest"].feature_importances_[len(feat_names) - 1:])
+    nlp_importance = sum(pipe['random_forest'].feature_importances_[len(feat_names) - 1:])
     feat_imp = np.append(feat_imp, nlp_importance)
     fig_feat_imp, sub_feat_imp = plt.subplots(figsize=(10, 10))
-    # idx = np.argsort(feat_imp)[::-1]
-    sub_feat_imp.bar(range(feat_imp.shape[0]), feat_imp, color="r", align="center")
+    sub_feat_imp.bar(range(feat_imp.shape[0]), feat_imp, color='r', align='center')
     _ = sub_feat_imp.set_xticks(range(feat_imp.shape[0]))
     _ = sub_feat_imp.set_xticklabels(np.array(feat_names), rotation=90)
     fig_feat_imp.tight_layout()
@@ -157,8 +156,8 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     # Let's handle the categorical features first
     # Ordinal categorical are categorical values for which the order is meaningful, for example
     # for room type: 'Entire home/apt' > 'Private room' > 'Shared room'
-    ordinal_categorical = ["room_type"]
-    non_ordinal_categorical = ["neighbourhood_group"]
+    ordinal_categorical = ['room_type']
+    non_ordinal_categorical = ['neighbourhood_group']
     # NOTE: we do not need to impute room_type because the type of the room
     # is mandatory on the websites, so missing values are not possible in production
     # (nor during training). That is not true for neighbourhood_group
@@ -169,7 +168,7 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     # 1 - A SimpleImputer(strategy="most_frequent") to impute missing values
     # 2 - A OneHotEncoder() step to encode the variable
     non_ordinal_categorical_preproc = make_pipeline(
-        SimpleImputer(strategy="most_frequent"),
+        SimpleImputer(strategy='most_frequent'),
         OneHotEncoder()
     )
     ######################################
@@ -235,7 +234,6 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
             ("random_forest", random_Forest),
         ]
     )
-
     return sk_pipe, processed_features
 
 
